@@ -1,0 +1,885 @@
+{
+	"info": {
+		"_postman_id": "339c52e5-45a9-4fdd-ab1f-6642ed84c929",
+		"name": "ClientServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Check server and port",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Server is on 8080\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server_url}}/",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete all users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"All users deleted\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{server_url}}/users",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Registration success\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"login\" : \"{{user_login}}\",\r\n  \"passwordBase64\" : \"{{user_password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/register",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Invalid Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User login is invalid\", function () {\r",
+							"  pm.response.to.have.status(409);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"login\" : \"\",\r\n  \"passwordBase64\" : \"cGF\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/register",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Invalid Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User password is invalid\", function () {\r",
+							"  pm.response.to.have.status(409);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"login\" : \"log\",\r\n  \"passwordBase64\" : \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/register",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"user_token\", pm.response.headers.get(\"Authorization\"));\r",
+							"\r",
+							"pm.test(\"Login successful\", () => pm.response.to.have.status(200));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/login?login={{user_login}}&password={{user_password}}",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "{{user_login}}"
+						},
+						{
+							"key": "password",
+							"value": "{{user_password}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login INVALID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login invalid\", () => pm.response.to.have.status(401));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/login?login=no_such_user&password=no_such_password",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "no_such_user"
+						},
+						{
+							"key": "password",
+							"value": "no_such_password"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete all goods",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"All goods deleted\", () => pm.response.to.have.status(200));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server_url}}/api/goods",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"goods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADD product 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Product 1 added\", () => pm.response.to.have.status(200));\r",
+							"\r",
+							"// TODO: check id!!!"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\" : \"Button\",\r\n  \"description\" : \"this is not grechka\",\r\n  \"manufacturer\" : \"Apple\",\r\n  \"quantity\" : 100.0,\r\n  \"price\" : 5.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/api/good",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADD product 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Product 2 added\", () => pm.response.to.have.status(200));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\" : \"Grechka\",\r\n  \"description\" : \"this is tasty\",\r\n  \"manufacturer\" : \"Nike\",\r\n  \"quantity\" : 10.0,\r\n  \"price\" : 1.2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/api/good",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADD product 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Product 3 added\", () => pm.response.to.have.status(200));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\" : \"Watch\",\r\n  \"description\" : \"this shows Swiss time\",\r\n  \"manufacturer\" : \"Merida\",\r\n  \"quantity\" : 2.0,\r\n  \"price\" : 10000.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/api/good",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADD product INVALID 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Quantity is < 0\", () => pm.response.to.have.status(409));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\" : \"Not Grechka\",\r\n  \"description\" : \"this is tasty\",\r\n  \"manufacturer\" : \"Nike\",\r\n  \"quantity\" : -10.0,\r\n  \"price\" : 1.2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/api/good",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADD product INVALID 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Name \\\"Grechka\\\" already exists\", () => pm.response.to.have.status(409));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\" : \"Grechka\",\r\n  \"description\" : \"this is tasty\",\r\n  \"manufacturer\" : \"Nike\",\r\n  \"quantity\" : 10.0,\r\n  \"price\" : 1.2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/api/good",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET product OK",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Product got\", () => pm.response.to.have.status(200));\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server_url}}/api/good/1",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET product INVALID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"No such product\", () => pm.response.to.have.status(404));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server_url}}/api/good/130491",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good",
+						"130491"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET All products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server_url}}/api/goods",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"goods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE product OK",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Update successful\", () => pm.response.to.have.status(200));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\" : \"New Button Name\",\r\n  \"description\" : \"new this is not grechka\",\r\n  \"manufacturer\" : \"New Apple\",\r\n  \"quantity\" : 40.0,\r\n  \"price\" : 323.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/api/good/1",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE product INVALID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Name already exists\", () => pm.response.to.have.status(409));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\" : \"New Button Name\",\r\n  \"description\" : \"new this is not grechka\",\r\n  \"manufacturer\" : \"New Apple\",\r\n  \"quantity\" : 40.0,\r\n  \"price\" : 323.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/api/good/2",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Delete successful\", () => pm.response.to.have.status(204));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server_url}}/api/good/3",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE product INVALID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"No product to delete\", () => pm.response.to.have.status(404));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{user_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server_url}}/api/good/74",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"api",
+						"good",
+						"74"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.collectionVariables.set(\"server_url\", \"http://localhost:8080\");",
+					"",
+					"pm.collectionVariables.set(\"server_port\", 5);",
+					"",
+					"pm.collectionVariables.set(\"user_login\", \"login\");",
+					"pm.collectionVariables.set(\"user_password\", \"cGFzc3dvcmRtag==\");"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_token",
+			"value": ""
+		},
+		{
+			"key": "products_quantity",
+			"value": ""
+		},
+		{
+			"key": "server_port",
+			"value": ""
+		},
+		{
+			"key": "server_url",
+			"value": ""
+		},
+		{
+			"key": "user_login",
+			"value": ""
+		},
+		{
+			"key": "user_password",
+			"value": ""
+		}
+	]
+}
