@@ -3,6 +3,7 @@ package service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.User;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -12,6 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,9 +23,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ServerTest {
     private static Server server;
@@ -34,17 +40,17 @@ public class ServerTest {
     static {
         try {
             server = new Server();
-            url = "http://localhost:" + server.getPort();
+            url = "localhost:" + server.getPort();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @BeforeAll
-    static void shouldCleanAllUsersRegisterAndLoginUser() throws IOException {
+    static void shouldCleanAllUsersRegisterAndLoginUser() throws IOException, URISyntaxException {
         // clear all users
         HttpUriRequest requestClearAll = RequestBuilder.create("DELETE")
-                .setUri(url + "/users")
+                .setUri("http://" + url + "/users")
                 .build();
 
         HttpResponse httpResponseClearAll = HttpClientBuilder.create().build().execute( requestClearAll );
@@ -53,7 +59,7 @@ public class ServerTest {
 
         // register user
         HttpUriRequest requestRegister = RequestBuilder.create("POST")
-                .setUri(url + "/register")
+                .setUri("http://" + url + "/register")
                 .setEntity(new StringEntity("{\"login\":\"login\",\"passwordBase64\":\"cGFzc3dvcmRtag==\"}", ContentType.APPLICATION_JSON))
                 .build();
 
@@ -61,27 +67,31 @@ public class ServerTest {
 
         assertEquals(HttpStatus.SC_OK, httpResponseRegister.getStatusLine().getStatusCode());
 
-//        // login user
-//        HttpUriRequest requestLogin = RequestBuilder.create("POST")
-//                .setUri(url + "/login")
-//                .addParameter("login", "login")
-//                .addParameter("password","cGFzc3dvcmRtag==")
-//                .build();
-//
-//        HttpResponse responseLogin = HttpClientBuilder.create().build().execute( requestLogin );
-//
-//        assertEquals(HttpStatus.SC_OK, responseLogin.getStatusLine().getStatusCode());
-//
-//        userToken = responseLogin.getEntity().toString();
-//        System.out.println(userToken);
+        // login user
+        URIBuilder builder = new URIBuilder();
+        builder.setScheme("http").setHost(url).setPath("/login")
+                .setParameter("login", "login")
+                .setParameter("password", "cGFzc3dvcmRtag==");
+        URI uri = builder.build();
+
+        HttpUriRequest requestLogin = RequestBuilder.create("POST")
+                .setUri(uri)
+                .setHeader("Content-Length", "0")
+                .build();
+
+        HttpResponse responseLogin = HttpClientBuilder.create().build().execute( requestLogin );
+
+        assertEquals(HttpStatus.SC_OK, responseLogin.getStatusLine().getStatusCode());
+
+        userToken = Arrays.stream(responseLogin.getAllHeaders()).filter(e -> e.getName().equals("Authorization")).findFirst().get().getValue();
     }
 
     @Test
     public void serverIsUp()
             throws ClientProtocolException, IOException {
-        HttpUriRequest request = new HttpGet(url);
+        HttpUriRequest request = new HttpGet("http://" + url);
 
-        HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+        HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request );
 
         assertEquals(httpResponse.getStatusLine().getStatusCode(),
                 HttpStatus.SC_OK);
