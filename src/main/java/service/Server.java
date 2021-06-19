@@ -28,6 +28,7 @@ public class Server {
     private static final int PORT = 8080;
 
     private final ProductDBManager dbManager;
+    private HttpServer server;
 
     private static final Pattern GOOD_ID_URI_PATTERN = Pattern.compile("/api/good/[\\d]+", Pattern.CASE_INSENSITIVE);
 
@@ -40,7 +41,6 @@ public class Server {
 
     private void createServer() throws IOException {
         InetSocketAddress address = new InetSocketAddress(PORT);
-        HttpServer server;
         while (true) {
             try {
                 server = HttpServer.create(address, 0);
@@ -303,6 +303,10 @@ public class Server {
 
     private static byte[] base64ToBytes(String base64) {
         return Base64.getDecoder().decode(base64);
+    }
+
+    public int getPort() {
+        return server.getAddress().getPort();
     }
 
 
